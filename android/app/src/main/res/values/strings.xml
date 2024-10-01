@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">budget-tracker</string>
+    <string name="title_activity_main">budget-tracker</string>
+    <string name="package_name">app.timweb.budgettracker</string>
+    <string name="custom_url_scheme">app.timweb.budgettracker</string>
+</resources>
