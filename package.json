@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev:android": "vite build && capacitor sync android && capacitor run android",
+    "build": "tsc -b && vite build && capacitor sync android",
     "lint": "eslint .",
     "preview": "vite preview"
   },

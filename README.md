@@ -38,6 +38,39 @@ This is a [Capacitor](https://capacitorjs.com) app that allows you to track a pe
 ### Setup
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/webertim/budget-tracker.git
-   ```
+    ```bash
+    git clone https://github.com/webertim/budget-tracker.git
+    ```
+
+2. Install dependencies:
+    ```bash
+    npm install
+    ```
+3. Start the development server:
+    ```bash
+    npm run dev
+    ```
+4. Open the application in your browser:
+    ```bash
+    open http://localhost:5173
+    ```
+
+    > Note: To properly preview the application you can open the dev tools in your browser (`F12`) and switch to teh mobile view (`Ctrl + Shift + M`).
+
+5. (Optional) To run the App on an Emulator or a real device, run:
+    ```bash
+    npm run dev:android
+    ```
+
+    > Note: In contrast to the `dev` command, this command also builds the application for Android and runs it on an emulator or a real device. Therefore no automatic refresh during development is possible. I strongly recommend to use the `dev` command for development.
+
+### Build
+1. Build the application for Android:
+    ```bash
+    npm run build
+    ```
+2. Open the android folder in Android Studio and build the application.
+
+### Add new components
+1. The application uses [Shadcn](https://ui.shadcn.com/) for the UI components. Shadcn is based on Tailwind CSS and is therefore very customizable.
+2. If you need a new component visit [Shadcn Components](https://ui.shadcn.com/components) and copy the code of the installation section to add the component to this project.
