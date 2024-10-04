@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "mikestead.dotenv",
+    "dbaeumer.vscode-eslint",
+    "ecmel.vscode-html-css",
+    "zainchen.json",
+    "christian-kohler.npm-intellisense",
+    "esbenp.prettier-vscode",
+    "bradlc.vscode-tailwindcss",
+    "austenc.tailwind-docs"
+  ]
+}
