@@ -3,6 +3,10 @@ import useLocalStorage from './useLocalStorage';
 import { Payment } from '@/lib/types';
 import { v4 } from 'uuid';
 
+/**
+ * A hook that returns the current payments for a given month.
+ * It reads the payments from local storage and provides functions to add and remove payments.
+ */
 const useCurrentPayments = (currentMonth: Date) => {
   const [{ loading, value: payments }, setPayments] = useLocalStorage<
     Payment[]
