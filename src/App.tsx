@@ -1,15 +1,18 @@
 import BudgetMonth from './components/budgetMonth';
-import CircleSwipe from './components/circleSwipe';
 import { DataProvider } from './components/dataProvider';
 
 const today = new Date();
 const mountMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
+/**
+ * The entry point of the application.
+ * It renders the BudgetMonth component with the mountMonth set to the first day of the current month.
+ */
 function App() {
   return (
     <DataProvider>
       <div className="w-full h-full">
-        <CircleSwipe ChildComponent={BudgetMonth} childProps={{ mountMonth }} />
+        <BudgetMonth mountMonth={mountMonth} />
       </div>
     </DataProvider>
   );

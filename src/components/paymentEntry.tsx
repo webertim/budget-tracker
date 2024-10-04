@@ -16,6 +16,9 @@ type Props = {
   removePayment: () => void;
 };
 
+/**
+ * A parameterized entry for a payment. It takes a payment and a function to remove the payment and displays the payment.
+ */
 const PaymentEntry = ({ payment, removePayment }: Props) => {
   return (
     <div className="flex justify-between items-center rounded-md bg-card p-2">

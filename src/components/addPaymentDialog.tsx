@@ -17,11 +17,16 @@ type Props = {
   addPayment: (payment: Omit<Payment, 'id' | 'createdAtDate'>) => void;
 };
 
+/**
+ * A Button that opens a dialog to add a new payment.
+ */
 const AddPaymentDialog = ({ addPayment }: Props) => {
+  // State of the "add payment" dialog
   const [description, setDescription] = useState<string | null>(null);
   const [value, setValue] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
+  // This effect always runs when the value of *open* changes and resets the form.
   useEffect(() => {
     if (!open) {
       setDescription(null);
@@ -29,8 +34,8 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
     }
   }, [open]);
 
+  // Handles the form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    console.log('handleSubmit');
     e.preventDefault();
     if (!value) {
       return;
@@ -42,6 +47,7 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
     setOpen(false);
   };
 
+  // Handles the change of the value input
   const handleValueChange = (e: ChangeEvent<HTMLInputElement>) => {
     try {
       setValue(parseFloat(e.target.value));
@@ -50,6 +56,7 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
     }
   };
 
+  // Handles the change of the description input
   const handleDescriptionChange = (e: ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
@@ -57,7 +64,7 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-12 w-12 rounded-full absolute bottom-4 right-4">
+        <Button className="h-12 w-12 rounded-full fixed bottom-4 right-4">
           <Plus />
         </Button>
       </DialogTrigger>
@@ -78,7 +85,7 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
             value={value ?? ''}
             onChange={handleValueChange}
             placeholder="Betrag"
-          />{' '}
+          />
           <Input
             type="text"
             value={description ?? ''}

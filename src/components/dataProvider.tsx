@@ -2,6 +2,7 @@ import useLocalStorage from '@/hooks/useLocalStorage';
 import { BUDGETS_KEY, DEFAULT_BUDGET_VALUE } from '@/lib/constants';
 import { Budget } from '@/lib/types';
 import { isSameMonth } from '@/lib/utils';
+import { LoaderCircle } from 'lucide-react';
 import { createContext, ReactNode } from 'react';
 
 const defaultBudget: Budget = {
@@ -9,6 +10,7 @@ const defaultBudget: Budget = {
   value: DEFAULT_BUDGET_VALUE,
 };
 
+// The context that holds the budget data.
 const DataContext = createContext({
   budgets: [defaultBudget],
   setBudget: (budget: number, month: Date) => {
@@ -16,11 +18,24 @@ const DataContext = createContext({
   },
 });
 
+// The provider that provides the budget data to its children.
 const DataProvider = ({ children }: { children: ReactNode }) => {
-  const [budgets, setBudgets] = useLocalStorage<Budget[]>(BUDGETS_KEY, [
-    defaultBudget,
-  ]);
+  // The list of budgets set by the user.
+  const [{ loading, value: budgets }, setBudgets] = useLocalStorage<Budget[]>(
+    BUDGETS_KEY,
+    [defaultBudget]
+  );
 
+  // If the budgets are still loading, display a loader.
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <LoaderCircle className="animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // The function to set a budget for a specific month.
   const setBudget = (budget: number, targetMonth: Date) => {
     const now = new Date();
     if (isSameMonth(targetMonth, now)) {
@@ -40,7 +55,7 @@ const DataProvider = ({ children }: { children: ReactNode }) => {
   return (
     <DataContext.Provider
       value={{
-        budgets,
+        budgets: budgets,
         setBudget,
       }}
     >

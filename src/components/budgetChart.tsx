@@ -5,7 +5,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from './ui/chart';
-import { memo, useEffect } from 'react';
 
 const chartConfig = {
   desktop: {
@@ -24,14 +23,12 @@ type Props = {
   month: Date;
 };
 
+/**
+ * A chart that shows the budget and spent amount for a month.
+ */
 const BudgetChart = ({ budget, spent, month }: Props) => {
+  // Data for the chart
   const chartData = [{ month: month, desktop: budget - spent, mobile: spent }];
-
-  useEffect(() => {
-    console.log('mount');
-  }, []);
-
-  console.log('rerender');
 
   return (
     <ChartContainer
@@ -94,4 +91,4 @@ const BudgetChart = ({ budget, spent, month }: Props) => {
   );
 };
 
-export default memo(BudgetChart);
+export default BudgetChart;

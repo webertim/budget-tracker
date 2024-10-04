@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { Preferences } from '@capacitor/preferences';
+import { useEffect, useState } from 'react';
 
 const mapJSONObject = (obj: Record<string, unknown>) => {
   return Object.fromEntries(
@@ -12,36 +13,60 @@ const mapJSONObject = (obj: Record<string, unknown>) => {
   );
 };
 
-const useLocalStorage = <T>(key: string, initialValue: T) => {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      if (!item) return initialValue;
+const readKeyFromLocalStorage = async <T>(key: string, initialValue: T) => {
+  try {
+    const { value } = await Preferences.get({ key });
+    if (!value) return initialValue;
 
-      const parsedItem = JSON.parse(item);
+    const parsedItem = JSON.parse(value);
 
-      if (Array.isArray(parsedItem)) {
-        return parsedItem.map(mapJSONObject) as T;
-      }
-
-      return Object.fromEntries(
-        Object.entries(parsedItem).map(([key, value]) => {
-          if (key.includes('Date') && typeof value === 'string') {
-            return [key, new Date(value)];
-          } else {
-            return [key, value];
-          }
-        })
-      ) as T;
-    } catch {
-      return initialValue;
+    if (Array.isArray(parsedItem)) {
+      return parsedItem.map(mapJSONObject) as T;
     }
+
+    return Object.fromEntries(
+      Object.entries(parsedItem).map(([key, value]) => {
+        if (key.includes('Date') && typeof value === 'string') {
+          return [key, new Date(value)];
+        } else {
+          return [key, value];
+        }
+      })
+    ) as T;
+  } catch {
+    return initialValue;
+  }
+};
+
+const useLocalStorage = <T>(key: string, initialValue: T) => {
+  const [storedValue, setStoredValue] = useState<
+    | {
+        loading: false;
+        value: T;
+      }
+    | { loading: true; value: null }
+  >({
+    loading: true,
+    value: null,
   });
 
-  const setValue = (value: T) => {
+  useEffect(() => {
+    (async () => {
+      setStoredValue({
+        loading: false,
+        value: await readKeyFromLocalStorage(key, initialValue),
+      });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  const setValue = async (value: T) => {
     try {
-      setStoredValue(value);
-      window.localStorage.setItem(key, JSON.stringify(value));
+      await Preferences.set({ key, value: JSON.stringify(value) });
+      setStoredValue({
+        loading: false,
+        value,
+      });
     } catch (error) {
       console.log(error);
     }

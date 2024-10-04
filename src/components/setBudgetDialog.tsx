@@ -15,12 +15,18 @@ type Props = {
   month: Date;
 };
 
+/**
+ * A button that opens a dialog to set a new budget for a month.
+ * It takes a month to set the budget for and displays a dialog with a form to set the budget.
+ */
 const SetBudgetDialog = ({ month }: Props) => {
+  // State of the "set budget" dialog
   const [value, setValue] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const { setBudget } = useContext(DataContext);
 
+  // This effect always runs when the value of *open* changes and resets the form.
   useEffect(() => {
     if (!open) {
       setValue(null);
@@ -28,6 +34,7 @@ const SetBudgetDialog = ({ month }: Props) => {
     }
   }, [open]);
 
+  // Handles the form submission. It sets the budget for the month and closes the dialog.
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!value) {
@@ -46,6 +53,7 @@ const SetBudgetDialog = ({ month }: Props) => {
     setOpen(false);
   };
 
+  // Handles the change of the value input
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     try {
       setValue(parseFloat(e.target.value));
@@ -57,11 +65,8 @@ const SetBudgetDialog = ({ month }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant={'ghost'}
-          className=" h-6 w-6 p-1 rounded-full bg-transparent"
-        >
-          <DollarSign />
+        <Button variant="outline" className="p-2">
+          <DollarSign width={18} />
         </Button>
       </DialogTrigger>
       <DialogContent className="">

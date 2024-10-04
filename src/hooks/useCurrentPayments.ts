@@ -4,10 +4,17 @@ import { Payment } from '@/lib/types';
 import { v4 } from 'uuid';
 
 const useCurrentPayments = (currentMonth: Date) => {
-  const [payments, setPayments] = useLocalStorage<Payment[]>(
-    `${currentMonth.toLocaleDateString()}_${PAYMENTS_KEY}`,
-    []
-  );
+  const [{ loading, value: payments }, setPayments] = useLocalStorage<
+    Payment[]
+  >(`${currentMonth.toLocaleDateString()}_${PAYMENTS_KEY}`, []);
+
+  if (loading)
+    return {
+      loading,
+      payments: [],
+      addPayment: () => {},
+      removePayment: () => {},
+    };
 
   const addPayment = (payment: Omit<Payment, 'id' | 'createdAtDate'>) => {
     setPayments([
@@ -25,6 +32,7 @@ const useCurrentPayments = (currentMonth: Date) => {
   };
 
   return {
+    loading: false,
     payments: payments.sort(
       (a, b) => a.createdAtDate.getTime() - b.createdAtDate.getTime()
     ),
