@@ -1,5 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BudgetMonth from './components/budgetMonth';
-import { DataProvider } from './components/dataProvider';
+import { BudgetProvider } from './components/budgetProvider';
+import { Toaster } from './components/ui/toaster';
 
 const today = new Date();
 const mountMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -9,12 +11,17 @@ const mountMonth = new Date(today.getFullYear(), today.getMonth(), 1);
  * It renders the BudgetMonth component with the mountMonth set to the first day of the current month.
  */
 function App() {
+  const queryClient = new QueryClient();
+
   return (
-    <DataProvider>
-      <div className="w-full h-full">
-        <BudgetMonth mountMonth={mountMonth} />
-      </div>
-    </DataProvider>
+    <QueryClientProvider client={queryClient}>
+      <BudgetProvider>
+        <div className="w-full h-full">
+          <BudgetMonth mountMonth={mountMonth} />
+        </div>
+        <Toaster />
+      </BudgetProvider>
+    </QueryClientProvider>
   );
 }
 

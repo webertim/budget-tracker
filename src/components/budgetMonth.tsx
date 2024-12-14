@@ -1,12 +1,12 @@
 import useCurrentBudget from '@/hooks/useCurrentBudget';
 import useCurrentPayments from '@/hooks/useCurrentPayments';
 import AddPaymentDialog from './addPaymentDialog';
-import PaymentEntry from './paymentEntry';
 import BudgetChart from './budgetChart';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { ChevronLeft, ChevronRight, LoaderCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import SetBudgetDialog from './setBudgetDialog';
+import BudgetList from './budgetList';
 
 type Props = {
   mountMonth: Date;
@@ -18,11 +18,11 @@ const BudgetMonth = ({ mountMonth }: Props) => {
   const month = new Date(mountMonth.getFullYear(), mountMonth.getMonth());
   month.setMonth(month.getMonth() + index);
 
-  const { loading, payments, removePayment, addPayment } =
-    useCurrentPayments(month);
+  const { query, removePayment, addPayment } = useCurrentPayments(month);
 
   const budget = useCurrentBudget(month);
-  const spent = payments.reduce((acc, payment) => acc + payment.value, 0);
+  const spent =
+    query.data?.reduce((acc, payment) => acc + payment.value, 0) ?? 0;
 
   return (
     <div className="w-screen h-screen overflow-auto p-4 flex flex-col relative">
@@ -65,27 +65,7 @@ const BudgetMonth = ({ mountMonth }: Props) => {
         </div>
       </div>
       <h2 className="text-xl font-semibold mt-4">Zahlungen</h2>
-      <div className="flex-grow flex flex-col gap-4 mt-4">
-        {loading ? (
-          <div className="flex-grow h-full w-full flex items-center justify-center">
-            <LoaderCircle className="animate-spin text-primary" />
-          </div>
-        ) : payments.length ? (
-          payments.map((payment) => (
-            <PaymentEntry
-              payment={payment}
-              key={payment.id}
-              removePayment={() => removePayment(payment.id)}
-            />
-          ))
-        ) : (
-          <div className="flex-grow h-full w-full flex items-center justify-center">
-            <span className="text-center text-sm  italic text-black/60">
-              Keine Zahlungen vorhanden.
-            </span>
-          </div>
-        )}
-      </div>
+      <BudgetList query={query} removePayment={removePayment} />
       <AddPaymentDialog addPayment={addPayment} />
     </div>
   );

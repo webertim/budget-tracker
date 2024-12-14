@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { LoaderCircle, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import {
   Dialog,
@@ -12,6 +12,9 @@ import {
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Input } from './ui/input';
 import { Payment } from '@/lib/types';
+import useDescriptionCount from '@/hooks/useDescriptionCount';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Card } from './ui/card';
 
 type Props = {
   addPayment: (payment: Omit<Payment, 'id' | 'createdAtDate'>) => void;
@@ -25,6 +28,7 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
   const [description, setDescription] = useState<string | null>(null);
   const [value, setValue] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // This effect always runs when the value of *open* changes and resets the form.
   useEffect(() => {
@@ -61,6 +65,8 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
     setDescription(e.target.value);
   };
 
+  const descriptionCountQuery = useDescriptionCount();
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -87,11 +93,38 @@ const AddPaymentDialog = ({ addPayment }: Props) => {
             placeholder="Betrag"
           />
           <Input
+            className="peer"
             type="text"
             value={description ?? ''}
             onChange={handleDescriptionChange}
+            onFocus={() => setShowSuggestions(true)}
             placeholder="Beschreibung"
           />
+          <div className="w-full relative h-0">
+            {showSuggestions && (
+              <Card className="absolute w-4/5 top-full left-0 right-0">
+                {descriptionCountQuery.data ? (
+                  descriptionCountQuery.data
+                    .filter((d) => d.startsWith(description ?? ''))
+                    .map((description) => (
+                      <p
+                        key={description}
+                        className="test-sm w-full justify-start px-3 py-1 first:pt-3 last:pb-3"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDescription(description);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {description}
+                      </p>
+                    ))
+                ) : (
+                  <LoaderCircle className="animate-spin text-primary" />
+                )}
+              </Card>
+            )}
+          </div>
           <DialogFooter className="w-full">
             <Button type="submit">Hinzufügen</Button>
           </DialogFooter>

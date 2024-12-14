@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { DataContext } from '@/components/dataProvider';
+import { BudgetContext } from '@/components/budgetProvider';
 import { DEFAULT_BUDGET_VALUE } from '@/lib/constants';
 import { getMaxDateMonth } from '@/lib/utils';
 
@@ -8,7 +8,7 @@ import { getMaxDateMonth } from '@/lib/utils';
  */
 const useCurrentBudget = (currentMonth: Date) => {
   // Get the list of budgets from the context.
-  const { budgets } = useContext(DataContext);
+  const { budgets } = useContext(BudgetContext);
 
   // Get the last "second" of the current month.
   const maxDate = getMaxDateMonth(currentMonth);

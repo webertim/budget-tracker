@@ -1,4 +1,4 @@
-import useLocalStorage from '@/hooks/useLocalStorage';
+import useData from '@/hooks/useData';
 import { BUDGETS_KEY, DEFAULT_BUDGET_VALUE } from '@/lib/constants';
 import { Budget } from '@/lib/types';
 import { isSameMonth } from '@/lib/utils';
@@ -11,23 +11,31 @@ const defaultBudget: Budget = {
 };
 
 // The context that holds the budget data.
-const DataContext = createContext({
+const BudgetContext = createContext({
   budgets: [defaultBudget],
   setBudget: (budget: number, month: Date) => {
     console.log('setBudget', budget, month);
   },
+  resetBudget: (targetMonth: Date) => {
+    console.log('resetBudget', targetMonth);
+  },
 });
 
 // The provider that provides the budget data to its children.
-const DataProvider = ({ children }: { children: ReactNode }) => {
+const BudgetProvider = ({ children }: { children: ReactNode }) => {
   // The list of budgets set by the user.
-  const [{ loading, value: budgets }, setBudgets] = useLocalStorage<Budget[]>(
-    BUDGETS_KEY,
-    [defaultBudget]
-  );
+  const { query, mutation } = useData<Budget[]>(BUDGETS_KEY, [defaultBudget]);
 
   // If the budgets are still loading, display a loader.
-  if (loading) {
+  if (query.isLoading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <LoaderCircle className="animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (query.isError || !query.data) {
     return (
       <div className="w-screen h-screen flex items-center justify-center">
         <LoaderCircle className="animate-spin text-primary" />
@@ -39,12 +47,12 @@ const DataProvider = ({ children }: { children: ReactNode }) => {
   const setBudget = (budget: number, targetMonth: Date) => {
     const now = new Date();
     if (isSameMonth(targetMonth, now)) {
-      setBudgets([...budgets, { createdAtDate: now, value: budget }]);
+      mutation.mutate([...query.data, { createdAtDate: now, value: budget }]);
     } else {
       // In this case we try to set a budget for another month than the current one
       // In this case we remove all budgets of the target month and add the new budget
-      setBudgets([
-        ...budgets.filter(
+      mutation.mutate([
+        ...query.data.filter(
           (budget) => !isSameMonth(targetMonth, budget.createdAtDate)
         ),
         { createdAtDate: targetMonth, value: budget },
@@ -52,16 +60,25 @@ const DataProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resetBudget = (targetMonth: Date) => {
+    mutation.mutate(
+      query.data.filter(
+        (budget) => !isSameMonth(targetMonth, budget.createdAtDate)
+      )
+    );
+  };
+
   return (
-    <DataContext.Provider
+    <BudgetContext.Provider
       value={{
-        budgets: budgets,
+        budgets: query.data,
         setBudget,
+        resetBudget,
       }}
     >
       {children}
-    </DataContext.Provider>
+    </BudgetContext.Provider>
   );
 };
 
-export { DataContext, DataProvider };
+export { BudgetContext, BudgetProvider };
